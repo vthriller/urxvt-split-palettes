@@ -9,8 +9,8 @@ sub parse {
 
 	# map "cRGB" (where each R/G/B ∈ [0; 5]) to the color cube values in the 16..231 range
 	if(/^c[0-5]{3}$/) {
-	my ($tmp, $r, $g, $b) = split //;
-	return 16 + 36*$r + 6*$g + $b;
+		my ($tmp, $r, $g, $b) = split //;
+		return 16 + 36*$r + 6*$g + $b;
 	}
 
 	# map "gN" (N ∈ [1; 24]) to the grayscale colors from the 232..255 range
