@@ -2,32 +2,26 @@
 
 # map rgb tuple (each value ∈ [0; 5]) to ANSI color from the range 16..231
 sub rgb {
-	my ($r, $g, $b) = @_;
+	$_ = $_[0];
+	if(!defined($_)) {
+		return undef;
+	}
+	my ($r, $g, $b) = split //;
 	return 16 + 36*$r + 6*$g + $b;
 }
 
 # each entry is [fg, bg]
-my %palette = (
-	# black
-	0 => [ rgb(0, 0, 0), rgb(0, 0, 0), ],
-	# red
-	1 => [ rgb(4, 0, 0), rgb(5, 2, 2), ],
-	# green
-	2 => [ rgb(0, 3, 0), rgb(1, 4, 2), ],
-	# yellow
-	3 => [ rgb(3, 1, 0), rgb(5, 5, 1), ],
-	# blue
-	4 => [ rgb(0, 1, 5), rgb(2, 4, 5), ],
-	# magenta
-	5 => [ rgb(1, 0, 4), rgb(4, 3, 5), ],
-	# cyan
-	6 => [ rgb(0, 2, 2), rgb(3, 5, 5), ],
-	# white
-	7 => [ rgb(1, 1, 1), rgb(5, 5, 5), ],
-);
-# I'm too lazy; set bright colors to regular ones
-for (my $i = 0; $i < 8; $i++) {
-	$palette{$i+8} = $palette{$i};
+my %palette = ();
+sub on_start {
+	my ($self) = @_;
+
+	for(my $i = 0; $i < 15; $i++) {
+		my $fg = $self->x_resource("%.fg$i");
+		my $bg = $self->x_resource("%.bg$i");
+		$palette{$i} = [ rgb($fg), rgb($bg) ];
+	}
+
+	()
 }
 
 sub on_line_update {
@@ -44,10 +38,16 @@ sub on_line_update {
 
 		# 0, 1 are Color_fg/Color_bg, hence ±2
 		if($fg >= 2 && $fg <= 15+2) {
-			$fg = $palette{$fg-2}[0]+2;
+			my $new_fg = $palette{$fg-2}[0];
+			if(defined($new_fg)) {
+				$fg = $new_fg + 2;
+			}
 		}
 		if($bg >= 2 && $bg <= 15+2) {
-			$bg = $palette{$bg-2}[1]+2;
+			my $new_bg = $palette{$bg-2}[1];
+			if(defined($new_bg)) {
+				$bg = $new_bg + 2;
+			}
 		}
 		urxvt::SET_COLOR($_, $fg, $bg)
 	} @{$rend};
