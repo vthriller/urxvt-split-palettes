@@ -8,16 +8,6 @@ sub rgb {
 
 # each entry is [fg, bg]
 my %palette = (
-	# default fg
-	-2 => [
-		rgb(0, 0, 0),
-		rgb(0, 0, 0), # shouldn't happen
-	],
-	# default bg
-	-1 => [
-		rgb(5, 5, 5), # shouldn't happen
-		rgb(5, 5, 5),
-	],
 	# black
 	0 => [ rgb(0, 0, 0), rgb(0, 0, 0), ],
 	# red
@@ -53,10 +43,10 @@ sub on_line_update {
 		my $bg = urxvt::GET_BASEBG $_;
 
 		# 0, 1 are Color_fg/Color_bg, hence ±2
-		if($fg <= 15+2) {
+		if($fg >= 2 && $fg <= 15+2) {
 			$fg = $palette{$fg-2}[0]+2;
 		}
-		if($bg <= 15+2) {
+		if($bg >= 2 && $bg <= 15+2) {
 			$bg = $palette{$bg-2}[1]+2;
 		}
 		urxvt::SET_COLOR($_, $fg, $bg)
