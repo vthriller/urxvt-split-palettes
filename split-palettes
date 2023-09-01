@@ -1,0 +1,70 @@
+#use Data::Dumper;
+
+# map rgb tuple (each value ∈ [0; 5]) to ANSI color from the range 16..231
+sub rgb {
+	my ($r, $g, $b) = @_;
+	return 16 + 36*$r + 6*$g + $b;
+}
+
+# each entry is [fg, bg]
+my %palette = (
+	# default fg
+	-2 => [
+		rgb(0, 0, 0),
+		rgb(0, 0, 0), # shouldn't happen
+	],
+	# default bg
+	-1 => [
+		rgb(5, 5, 5), # shouldn't happen
+		rgb(5, 5, 5),
+	],
+	# black
+	0 => [ rgb(0, 0, 0), rgb(0, 0, 0), ],
+	# red
+	1 => [ rgb(4, 0, 0), rgb(5, 2, 2), ],
+	# green
+	2 => [ rgb(0, 3, 0), rgb(1, 4, 2), ],
+	# yellow
+	3 => [ rgb(3, 1, 0), rgb(5, 5, 1), ],
+	# blue
+	4 => [ rgb(0, 1, 5), rgb(2, 4, 5), ],
+	# magenta
+	5 => [ rgb(1, 0, 4), rgb(4, 3, 5), ],
+	# cyan
+	6 => [ rgb(0, 2, 2), rgb(3, 5, 5), ],
+	# white
+	7 => [ rgb(1, 1, 1), rgb(5, 5, 5), ],
+);
+# I'm too lazy; set bright colors to regular ones
+for (my $i = 0; $i < 8; $i++) {
+	$palette{$i+8} = $palette{$i};
+}
+
+sub on_line_update {
+	my ($self, $row) = @_;
+
+	my $line = $self->line($row);
+	my $rend = $line->r; # line rendition
+
+	#print "-" . Dumper(@{$rend}) if @{$rend};
+
+	@{$rend} = map {
+		my $fg = urxvt::GET_BASEFG $_;
+		my $bg = urxvt::GET_BASEBG $_;
+
+		# 0, 1 are Color_fg/Color_bg, hence ±2
+		if($fg <= 15+2) {
+			$fg = $palette{$fg-2}[0]+2;
+		}
+		if($bg <= 15+2) {
+			$bg = $palette{$bg-2}[1]+2;
+		}
+		urxvt::SET_COLOR($_, $fg, $bg)
+	} @{$rend};
+
+	#print "+" . Dumper(@{$rend}) if @{$rend};
+
+	$line->r($rend);
+
+	()
+}
