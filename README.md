@@ -8,7 +8,7 @@ Sometimes developers don't bother supporting neither theming nor [`NO_COLOR`](ht
 
 ![](screen-bg.png)
 
-Another example is default color scheme for vim. Sure, I might just tweak it, but I'm too lazy when it comes to not only modifying it, but also distributing configs onto various remote servers and dealing with occasionally missing terminfo for `rxvt-unicode-256color`. By having separate yellow colors for background and foreground, I can have both readable, high-contrast keywords and search highlighing that doesn't look like vomit—all without configuring vim on any machine. And it helps with vimdiff too!
+Another example is default color scheme for vim. Sure, I might just tweak it, but I'm too lazy when it comes to not only modifying it, but also distributing configs onto various remote servers and dealing with occasionally missing terminfo for `rxvt-unicode-256color`. By having separate colors for background and foreground, I don't have to deal with conflicts between syntax highlighter and vimdiff, or search highlighing looking like vomit—all without configuring vim on any machine!
 
 ![](screen-vim.png)
 
